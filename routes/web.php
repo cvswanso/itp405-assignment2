@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PlaylistController;
+use App\Http\Controllers\AlbumController;
+use App\Http\Controllers\TrackController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,3 +26,15 @@ Route::get('/invoices/{id}', [InvoiceController::class, 'show'])->name('invoice.
 
 Route::get('/playlists', [PlaylistController::class, 'index'])->name('playlist.index');
 Route::get('/playlists/{id}', [PlaylistController::class, 'show'])->name('playlist.show');
+Route::get('/playlists/{id}/edit', [PlaylistController::class, 'edit'])->name('playlist.edit');
+Route::post('/playlists/{id}', [PlaylistController::class, 'update'])->name('playlist.update');
+
+Route::get('/albums', [AlbumController::class, 'index'])->name('album.index');
+Route::get('/albums/create', [AlbumController::class, 'create'])->name('album.create');
+Route::post('/albums', [AlbumController::class, 'store'])->name('album.store');
+Route::get('albums/{id}/edit', [AlbumController::class, 'edit'])->name('album.edit');
+Route::post('/albums/{id}', [AlbumController::class, 'update'])->name('album.update');
+
+Route::get('/tracks', [TrackController::class, 'index'])->name('track.index');
+Route::get('/tracks/new', [TrackController::class, 'new'])->name('track.new');
+Route::post('/tracks', [TrackController::class, 'store'])->name('track.store');
