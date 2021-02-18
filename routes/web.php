@@ -5,6 +5,7 @@ use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\TrackController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,3 +39,7 @@ Route::post('/albums/{id}', [AlbumController::class, 'update'])->name('album.upd
 Route::get('/tracks', [TrackController::class, 'index'])->name('track.index');
 Route::get('/tracks/new', [TrackController::class, 'new'])->name('track.new');
 Route::post('/tracks', [TrackController::class, 'store'])->name('track.store');
+
+if (env('APP_ENV') !== 'local') {
+    URL::forceScheme('https');
+}
