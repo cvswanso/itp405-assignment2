@@ -22,7 +22,7 @@
                         {{$invoice->invoice_date}}
                     </td>
                     <td>
-                        {{$invoice->first_name}} {{$invoice->last_name}}
+                        {{$invoice->customer->full_name}}
                     </td>
                     <td>
                         ${{$invoice->total}}
