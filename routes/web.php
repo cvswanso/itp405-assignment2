@@ -4,7 +4,12 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\EloquentAlbumController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TrackController;
+use App\Http\Controllers\RegistrationController;
+use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use App\Models\Track;
@@ -27,29 +32,57 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoice.index');
-Route::get('/invoices/{id}', [InvoiceController::class, 'show'])->name('invoice.show');
+Route::get('login', [AuthController::class, 'loginForm'])->name('auth.loginForm');
+Route::post('login', [AuthController::class, 'login'])->name('auth.login');
+Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
-Route::get('/playlists', [PlaylistController::class, 'index'])->name('playlist.index');
-Route::get('/playlists/{id}', [PlaylistController::class, 'show'])->name('playlist.show');
-Route::get('/playlists/{id}/edit', [PlaylistController::class, 'edit'])->name('playlist.edit');
-Route::post('/playlists/{id}', [PlaylistController::class, 'update'])->name('playlist.update');
+Route::view('/maintenance', 'maintenance')->name('maintenance');
 
-Route::get('/albums', [AlbumController::class, 'index'])->name('album.index');
-Route::get('/albums/create', [AlbumController::class, 'create'])->name('album.create');
-Route::post('/albums', [AlbumController::class, 'store'])->name('album.store');
-Route::get('albums/{id}/edit', [AlbumController::class, 'edit'])->name('album.edit');
-Route::post('/albums/{id}', [AlbumController::class, 'update'])->name('album.update');
+Route::middleware(['admin-maintenance'])->group(function () {
+    Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+    Route::post('/admin', [AdminController::class, 'update'])->name('admin.update');
+});
 
-Route::get('/eloquent/albums', [EloquentAlbumController::class, 'index'])->name('eloquentalbum.index');
-Route::get('/eloquent/albums/create', [EloquentAlbumController::class, 'create'])->name('eloquentalbum.create');
-Route::post('/eloquent/albums', [EloquentAlbumController::class, 'store'])->name('eloquentalbum.store');
-Route::get('/eloquent/albums/{id}/edit', [EloquentAlbumController::class, 'edit'])->name('eloquentalbum.edit');
-Route::post('/eloquent/albums/{id}', [EloquentAlbumController::class, 'update'])->name('eloquentalbum.update');
+Route::middleware(['custom-auth'])->group(function () {
+    Route::middleware(['not-blocked'])->group(function () {
+        Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoice.index');
+        Route::get('/invoices/{id}', [InvoiceController::class, 'show'])->name('invoice.show');
+        Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    });
 
-Route::get('/tracks', [TrackController::class, 'index'])->name('track.index');
-Route::get('/tracks/new', [TrackController::class, 'new'])->name('track.new');
-Route::post('/tracks', [TrackController::class, 'store'])->name('track.store');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
+    Route::view('/blocked', 'blocked')->name('blocked');
+});
+
+
+Route::middleware(['maintenance-mode'])->group(function () {
+    Route::get('/playlists', [PlaylistController::class, 'index'])->name('playlist.index');
+    Route::get('/playlists/{id}', [PlaylistController::class, 'show'])->name('playlist.show');
+    Route::get('/playlists/{id}/edit', [PlaylistController::class, 'edit'])->name('playlist.edit');
+    Route::post('/playlists/{id}', [PlaylistController::class, 'update'])->name('playlist.update');
+
+    Route::get('/albums', [AlbumController::class, 'index'])->name('album.index');
+    Route::get('/albums/create', [AlbumController::class, 'create'])->name('album.create');
+    Route::post('/albums', [AlbumController::class, 'store'])->name('album.store');
+    Route::get('albums/{id}/edit', [AlbumController::class, 'edit'])->name('album.edit');
+    Route::post('/albums/{id}', [AlbumController::class, 'update'])->name('album.update');
+
+    Route::get('/eloquent/albums', [EloquentAlbumController::class, 'index'])->name('eloquentalbum.index');
+    Route::get('/eloquent/albums/create', [EloquentAlbumController::class, 'create'])->name('eloquentalbum.create');
+    Route::post('/eloquent/albums', [EloquentAlbumController::class, 'store'])->name('eloquentalbum.store');
+    Route::get('/eloquent/albums/{id}/edit', [EloquentAlbumController::class, 'edit'])->name('eloquentalbum.edit');
+    Route::post('/eloquent/albums/{id}', [EloquentAlbumController::class, 'update'])->name('eloquentalbum.update');
+
+    Route::get('/tracks', [TrackController::class, 'index'])->name('track.index');
+    Route::get('/tracks/new', [TrackController::class, 'new'])->name('track.new');
+    Route::post('/tracks', [TrackController::class, 'store'])->name('track.store');
+
+    Route::get('/register', [RegistrationController::class, 'index'])->name('registration.index');
+    Route::post('/register', [RegistrationController::class, 'register'])->name('registration.create');
+
+    Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoice.index');
+    Route::get('/invoices/{id}', [InvoiceController::class, 'show'])->name('invoice.show');
+});
 
 Route::get('/eloquent', function() {
     // Querying
