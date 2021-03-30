@@ -28,9 +28,11 @@
                         ${{$invoice->total}}
                     </td>
                     <td>
-                        <a href="{{ route('invoice.show', [ 'id' => $invoice->id ]) }}">
-                            Details
-                        </a>
+                        @can('view', $invoice)
+                            <a href="{{ route('invoice.show', [ 'id' => $invoice->id ]) }}">
+                                Details
+                            </a>
+                        @endcan
                     </td>
                 </tr>
             @endforeach

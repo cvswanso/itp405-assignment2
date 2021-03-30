@@ -9,7 +9,7 @@ class AuthController extends Controller
 {
     public function logout() {
         Auth::logout();
-        return redirect()->route('invoice.index');
+        return redirect()->route('eloquentalbum.index');
     }
 
     public function loginForm() {
