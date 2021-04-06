@@ -12,10 +12,16 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Mail;
 use App\Models\Track;
 use App\Models\Artist;
 use App\Models\Album;
+use App\Models\Playlist;
 use App\Models\Genre;
+use App\Mail\NewAlbum;
+use App\Mail\Stats;
+use App\Jobs\AnnounceNewAlbum;
+use App\Jobs\SendStats;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +37,33 @@ use App\Models\Genre;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/mail', function () {
+    // Mail::raw("What is your favorite framework?", function ($message) {
+    //     $message->to("cvswanso@usc.edu")->subject('Hello Caitlin');
+    // });
+    // dispatch(function () {
+    //     $masterOfPuppets = Album::find(152);
+
+    //     logger($masterOfPuppets);
+
+    //     Mail::to('cvswanso@usc.edu')->send(new NewAlbum($masterOfPuppets));
+    // });
+
+    $jaggedLittlePill = Album::find(6);
+    AnnounceNewAlbum::dispatch($jaggedLittlePill);
+    // Mail::to('itp@usc.edu')->queue(new NewAlbum($jaggedLittlePill));
+
+    $masterOfPuppets = Album::find(152);
+    dispatch(new AnnounceNewAlbum($masterOfPuppets));
+});
+
+Route::post('/stats', function () {
+    $artist = Artist::count();
+    $playlist = Playlist::count();
+    $track = Track::sum('milliseconds');
+    SendStats::dispatch($artist, $playlist, $track);
+})->name('admin.stats');
 
 Route::get('login', [AuthController::class, 'loginForm'])->name('auth.loginForm');
 Route::post('login', [AuthController::class, 'login'])->name('auth.login');
